@@ -39,7 +39,7 @@ ResumeFilter/
 │       ├── config/        # MongoDB connection
 │       ├── controllers/   # auth, interview logic
 │       ├── middlewares/   # auth guard, file upload
-│       ├── models/        # User, InterviewReport, Blacklist
+│       ├── models/        # User, Interview Report, Blacklist
 │       ├── routes/        # /api/auth, /api/interview
 │       └── services/      # Gemini AI, Puppeteer PDF
 └── Frontend/
