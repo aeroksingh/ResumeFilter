@@ -87,7 +87,7 @@ const Interview = () => {
             <main className="loading-screen">
                 <div className="loading-inner">
                     <p className="error-text">{error}</p>
-                    <button className="back-btn" onClick={() => navigate('/')}>Go Back</button>
+                    <button className="back-btn" onClick={() => navigate('/planner')}>Go Back</button>
                 </div>
             </main>
         )
@@ -109,7 +109,7 @@ const Interview = () => {
 
                 <nav className="interview-nav">
                     <div className="nav-top">
-                        <button className="back-link" onClick={() => navigate('/')}>
+                        <button className="back-link" onClick={() => navigate('/planner')}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
                             Back
                         </button>

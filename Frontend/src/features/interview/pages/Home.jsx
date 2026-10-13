@@ -1,10 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useContext } from 'react'
 import { useInterview } from '../hooks/useInterview.js'
 import { useNavigate } from 'react-router'
-import './home.css'
+import { AuthContext } from '../../auth/auth.context.jsx'
+import { logout } from '../../auth/services/auth.api.js'
+import AppNavbar from '../components/AppNavbar.jsx'
+import './home.scss'
 
 const Home = () => {
     const { isGenerating, isFetchingReports, generateReport, getReports, reports, error } = useInterview()
+    const { user, setUser } = useContext(AuthContext)
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [resumeFile, setResumeFile] = useState(null)
@@ -15,6 +19,12 @@ const Home = () => {
     useEffect(() => {
         getReports()
     }, [getReports])
+
+    const handleLogout = () => {
+        logout().catch(() => null)
+        localStorage.removeItem("token")
+        setUser(null)
+    }
 
     const handleFileChange = (e) => {
         const file = e.target.files[0]
@@ -45,36 +55,20 @@ const Home = () => {
         }
     }
 
-    if (isFetchingReports) {
-        return (
-            <main className="loading-screen">
-                <div className="loading-inner">
-                    <div className="spinner" />
-                    <p>Loading your past plans...</p>
-                </div>
-            </main>
-        )
-    }
-
-    if (isGenerating) {
-        return (
-            <main className="loading-screen">
-                <div className="loading-inner">
-                    <div className="spinner" />
-                    <p>Analyzing job description and generating your interview plan... (This may take up to 30s)</p>
-                </div>
-            </main>
-        )
-    }
-
     return (
         <div className="home-page">
-            <header className="page-header">
-                <h1>Interview Preparation <span>Planner</span></h1>
-                <p>Upload your resume and job description to generate a personalized interview strategy.</p>
-            </header>
+            <AppNavbar reports={reports} user={user} onLogout={handleLogout} navigate={navigate} />
+            <main className="home-content">
+                <header className="page-header">
+                    <div>
+                        <p className="eyebrow">YOUR CAREER WORKSPACE</p>
+                        <h1>Interview Preparation <span>Planner</span></h1>
+                        <p className="page-intro">Turn a role description and your experience into a focused interview strategy.</p>
+                    </div>
+                    <div className="header-note"><span className="status-dot" />Your next opportunity starts here</div>
+                </header>
 
-            <div className="interview-card">
+            <section className="interview-card" aria-label="Interview plan details">
                 {(formError || error) && (
                     <div className="form-error">{formError || error}</div>
                 )}
@@ -134,12 +128,15 @@ const Home = () => {
                 </div>
 
                 <div className="card-footer">
-                    <span className="footer-note">AI-powered · ~30 seconds</span>
-                    <button onClick={handleGenerateReport} className="generate-btn">
-                        Generate Interview Plan
+                    <span className="footer-note">
+                        {isGenerating ? "Building your personalized plan..." : "AI-powered · usually takes about 30 seconds"}
+                    </span>
+                    <button onClick={handleGenerateReport} className="generate-btn" disabled={isGenerating}>
+                        {isGenerating && <span className="button-spinner" aria-hidden="true" />}
+                        {isGenerating ? "Generating plan..." : "Generate Interview Plan"}
                     </button>
                 </div>
-            </div>
+            </section>
 
             {reports.length > 0 && (
                 <section className="recent-reports">
@@ -161,6 +158,10 @@ const Home = () => {
                     </div>
                 </section>
             )}
+            {isFetchingReports && reports.length === 0 && (
+                <div className="reports-loading" role="status"><span className="spinner-small" />Loading saved plans...</div>
+            )}
+            </main>
         </div>
     )
 }

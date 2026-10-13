@@ -1,9 +1,13 @@
 const mongoose = require("mongoose")
-const pdfParse = require("pdf-parse")
+const { PDFParse } = require("pdf-parse")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 
 async function generateInterViewReportController(req, res) {
+    if (!req.user?.id) {
+        return res.status(401).json({ message: "Authentication required." })
+    }
+
     try {
         if (!req.file && !req.body.selfDescription) {
             return res.status(400).json({ message: "Either a resume file or self description is required." })
@@ -17,8 +21,13 @@ async function generateInterViewReportController(req, res) {
 
         let resumeText = ""
         if (req.file) {
-            const parsed = await pdfParse(req.file.buffer)
-            resumeText = parsed.text
+            const parser = new PDFParse({ data: req.file.buffer })
+            try {
+                const parsed = await parser.getText()
+                resumeText = parsed.text
+            } finally {
+                await parser.destroy()
+            }
         }
 
         const interViewReportByAi = await generateInterviewReport({

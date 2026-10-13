@@ -27,7 +27,7 @@ const Register = () => {
         const result = await handleRegister({ username, email, password })
         setSubmitting(false)
         if (result.success) {
-            navigate("/")
+            navigate("/planner")
         } else {
             setError(result.message)
         }

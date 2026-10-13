@@ -2,7 +2,9 @@ const jwt = require("jsonwebtoken")
 const tokenBlacklistModel = require("../models/blacklist.model")
 
 async function authUser(req, res, next) {
-    const token = req.cookies.token
+    const authorization = req.get("authorization")
+    const bearerToken = authorization?.match(/^Bearer\s+(.+)$/i)?.[1]
+    const token = bearerToken || req.cookies?.token
 
     if (!token) {
         return res.status(401).json({ message: "Token not provided." })
@@ -27,6 +29,10 @@ async function authUser(req, res, next) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET, {
             algorithms: ["HS256"], // reject tokens signed with unexpected algorithms
         })
+
+        if (!decoded || typeof decoded !== "object" || !decoded.id) {
+            return res.status(401).json({ message: "Invalid token." })
+        }
 
         req.user = decoded
         next()

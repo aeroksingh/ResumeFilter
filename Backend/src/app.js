@@ -14,12 +14,12 @@ app.use(cookieParser())
 
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
     .split(",")
-    .map(o => o.trim())
+    .map(o => o.trim().replace(/\/$/, ""))
 
 app.use(cors({
     origin(origin, callback) {
         // Allow requests with no origin (curl, Postman, server-to-server)
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
             return callback(null, true)
         }
         callback(new Error(`CORS: origin ${origin} is not allowed`))

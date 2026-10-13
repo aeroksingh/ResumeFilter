@@ -11,7 +11,7 @@ if (process.env.GOOGLE_GENAI_API_KEY && process.env.GOOGLE_GENAI_API_KEY !== 'YO
     console.warn("GOOGLE_GENAI_API_KEY is missing or set to a placeholder. AI features will fail.")
 }
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash"
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash"
 
 /* ─── Retry Helper (exponential backoff with rate-limit awareness) ── */
 

@@ -21,7 +21,7 @@ function getCookieOptions() {
     return {
         httpOnly: true,
         secure: isProduction,          // HTTPS only in production
-        sameSite: isProduction ? "strict" : "lax",
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 24 * 60 * 60 * 1000,  // 1 day in ms — matches JWT expiry
     }
 }

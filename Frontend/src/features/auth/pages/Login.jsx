@@ -22,7 +22,7 @@ const Login = () => {
         const result = await handleLogin({ email, password })
         setSubmitting(false)
         if (result.success) {
-            navigate('/')
+            navigate('/planner')
         } else {
             setError(result.message)
         }
@@ -31,6 +31,9 @@ const Login = () => {
     return (
         <main className="auth-page">
             <div className="auth-container">
+                <Link to="/" className="auth-home-link">
+                    <span aria-hidden="true">←</span> Back to home
+                </Link>
                 <div className="auth-header">
                     <h1>Sign In</h1>
                     <p>Welcome back. Enter your credentials to continue.</p>
