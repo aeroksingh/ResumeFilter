@@ -1,2 +1,36 @@
-/.env
-/node_modules
+# =============================================================================
+# Backend .gitignore
+# =============================================================================
+
+# ---------- Dependencies ----------
+node_modules/
+
+# ---------- Environment Variables ----------
+.env
+.env.local
+.env.*.local
+
+# ---------- Build / Output ----------
+dist/
+build/
+
+# ---------- Logs ----------
+*.log
+npm-debug.log*
+
+# ---------- Coverage & Testing ----------
+coverage/
+.nyc_output/
+
+# ---------- OS Files ----------
+.DS_Store
+Thumbs.db
+
+# ---------- IDE ----------
+.vscode/
+.idea/
+
+# ---------- Misc ----------
+*.tgz
+.cache/
+uploads/

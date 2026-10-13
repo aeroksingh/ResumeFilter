@@ -1,5 +1,5 @@
 import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
-import { useContext } from "react"
+import { useContext, useState, useCallback } from "react"
 import { InterviewContext } from "../interview.context"
 
 export const useInterview = () => {
@@ -9,26 +9,33 @@ export const useInterview = () => {
         throw new Error("useInterview must be used within an InterviewProvider")
     }
 
-    const { loading, setLoading, report, setReport, reports, setReports, error, setError } = context
+    const { report, setReport, reports, setReports } = context
 
-    const generateReport = async ({ jobDescription, selfDescription, resumeFile }) => {
-        setLoading(true)
+    // Localize loading and error states so they don't block the whole app with the wrong message
+    const [isGenerating, setIsGenerating] = useState(false)
+    const [isFetchingReports, setIsFetchingReports] = useState(false)
+    const [isFetchingReport, setIsFetchingReport] = useState(false)
+    const [isDownloading, setIsDownloading] = useState(false)
+    const [error, setError] = useState(null)
+
+    const generateReport = useCallback(async ({ jobDescription, selfDescription, resumeFile }) => {
+        setIsGenerating(true)
         setError(null)
         try {
             const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile })
             setReport(response.interviewReport)
             return response.interviewReport
         } catch (err) {
-            const msg = err.response?.data?.message || "Failed to generate report."
+            const msg = err.response?.data?.message || "Failed to generate report. The AI service may be temporarily unavailable."
             setError(msg)
             return null
         } finally {
-            setLoading(false)
+            setIsGenerating(false)
         }
-    }
+    }, [setReport])
 
-    const getReportById = async (id) => {
-        setLoading(true)
+    const getReportById = useCallback(async (id) => {
+        setIsFetchingReport(true)
         setError(null)
         try {
             const response = await getInterviewReportById(id)
@@ -39,12 +46,12 @@ export const useInterview = () => {
             setError(msg)
             return null
         } finally {
-            setLoading(false)
+            setIsFetchingReport(false)
         }
-    }
+    }, [setReport])
 
-    const getReports = async () => {
-        setLoading(true)
+    const getReports = useCallback(async () => {
+        setIsFetchingReports(true)
         setError(null)
         try {
             const response = await getAllInterviewReports()
@@ -54,12 +61,12 @@ export const useInterview = () => {
             setError(err.response?.data?.message || "Failed to fetch reports.")
             return []
         } finally {
-            setLoading(false)
+            setIsFetchingReports(false)
         }
-    }
+    }, [setReports])
 
-    const getResumePdf = async (interviewReportId) => {
-        setLoading(true)
+    const getResumePdf = useCallback(async (interviewReportId) => {
+        setIsDownloading(true)
         setError(null)
         try {
             const response = await generateResumePdf({ interviewReportId })
@@ -72,11 +79,23 @@ export const useInterview = () => {
             link.remove()
             window.URL.revokeObjectURL(url)
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to generate PDF.")
+            setError(err.response?.data?.message || "Failed to generate PDF. The AI service may be temporarily unavailable.")
         } finally {
-            setLoading(false)
+            setIsDownloading(false)
         }
-    }
+    }, [])
 
-    return { loading, report, reports, error, generateReport, getReportById, getReports, getResumePdf }
+    return {
+        report,
+        reports,
+        error,
+        isGenerating,
+        isFetchingReports,
+        isFetchingReport,
+        isDownloading,
+        generateReport,
+        getReportById,
+        getReports,
+        getResumePdf
+    }
 }

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose")
 const pdfParse = require("pdf-parse")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
@@ -40,13 +41,18 @@ async function generateInterViewReportController(req, res) {
         })
     } catch (err) {
         console.error("generateInterViewReportController error:", err)
-        res.status(500).json({ message: "Failed to generate interview report.", error: err.message })
+        res.status(500).json({ message: "Failed to generate interview report." })
     }
 }
 
 async function getInterviewReportByIdController(req, res) {
     try {
         const { interviewId } = req.params
+
+        if (!mongoose.Types.ObjectId.isValid(interviewId)) {
+            return res.status(400).json({ message: "Invalid interview report ID." })
+        }
+
         const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
 
         if (!interviewReport) {
@@ -56,7 +62,7 @@ async function getInterviewReportByIdController(req, res) {
         res.status(200).json({ message: "Interview report fetched successfully.", interviewReport })
     } catch (err) {
         console.error("getInterviewReportByIdController error:", err)
-        res.status(500).json({ message: "Failed to fetch interview report.", error: err.message })
+        res.status(500).json({ message: "Failed to fetch interview report." })
     }
 }
 
@@ -70,13 +76,18 @@ async function getAllInterviewReportsController(req, res) {
         res.status(200).json({ message: "Interview reports fetched successfully.", interviewReports })
     } catch (err) {
         console.error("getAllInterviewReportsController error:", err)
-        res.status(500).json({ message: "Failed to fetch interview reports.", error: err.message })
+        res.status(500).json({ message: "Failed to fetch interview reports." })
     }
 }
 
 async function generateResumePdfController(req, res) {
     try {
         const { interviewReportId } = req.params
+
+        if (!mongoose.Types.ObjectId.isValid(interviewReportId)) {
+            return res.status(400).json({ message: "Invalid interview report ID." })
+        }
+
         const interviewReport = await interviewReportModel.findOne({ _id: interviewReportId, user: req.user.id })
 
         if (!interviewReport) {
@@ -94,7 +105,7 @@ async function generateResumePdfController(req, res) {
         res.send(pdfBuffer)
     } catch (err) {
         console.error("generateResumePdfController error:", err)
-        res.status(500).json({ message: "Failed to generate resume PDF.", error: err.message })
+        res.status(500).json({ message: "Failed to generate resume PDF." })
     }
 }
 

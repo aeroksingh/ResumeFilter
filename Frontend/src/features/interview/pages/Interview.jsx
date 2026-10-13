@@ -61,7 +61,7 @@ const RoadMapDay = ({ day }) => (
 
 const Interview = () => {
     const [activeNav, setActiveNav] = useState('technical')
-    const { report, getReportById, loading, getResumePdf, error } = useInterview()
+    const { report, getReportById, isFetchingReport, isDownloading, getResumePdf, error } = useInterview()
     const { interviewId } = useParams()
     const navigate = useNavigate()
 
@@ -69,9 +69,9 @@ const Interview = () => {
         if (interviewId) {
             getReportById(interviewId)
         }
-    }, [interviewId])
+    }, [interviewId, getReportById])
 
-    if (loading) {
+    if (isFetchingReport) {
         return (
             <main className="loading-screen">
                 <div className="loading-inner">
@@ -128,9 +128,14 @@ const Interview = () => {
                     <button
                         onClick={() => getResumePdf(interviewId)}
                         className="download-btn"
+                        disabled={isDownloading}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
-                        Download Resume
+                        {isDownloading ? (
+                            <span className="spinner-small" style={{width: 14, height: 14, display: 'inline-block', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', animation: 'spin 1s linear infinite', marginRight: 8}}/>
+                        ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
+                        )}
+                        {isDownloading ? 'Generating...' : 'Download Resume'}
                     </button>
                 </nav>
 

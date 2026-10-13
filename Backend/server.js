@@ -4,7 +4,21 @@ const connectToDB = require("./src/config/database")
 
 const PORT = process.env.PORT || 3000
 
-(async () => {
+/* ─── Global Safety Nets ───────────────────────────────────────────── */
+
+process.on("unhandledRejection", (reason, promise) => {
+    console.error("Unhandled Rejection at:", promise, "reason:", reason)
+    // In production you might want to exit; in dev keep running
+})
+
+process.on("uncaughtException", (err) => {
+    console.error("Uncaught Exception:", err)
+    process.exit(1) // must exit — process state is unreliable
+})
+
+/* ─── Startup ──────────────────────────────────────────────────────── */
+
+;(async () => {
     try {
         await connectToDB()
 

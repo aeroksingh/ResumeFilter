@@ -1,6 +1,5 @@
 const mongoose = require("mongoose")
 
-
 async function connectToDB() {
     const uri = process.env.MONGO_URI
 
@@ -10,14 +9,9 @@ async function connectToDB() {
     }
 
     try {
-        await mongoose.connect(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        })
-
+        await mongoose.connect(uri)
         console.log("Connected to Database")
-    }
-    catch (err) {
+    } catch (err) {
         console.error("Failed to connect to MongoDB:", err)
         throw err
     }

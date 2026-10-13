@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import './home.css'
 
 const Home = () => {
-    const { loading, generateReport, getReports, reports, error } = useInterview()
+    const { isGenerating, isFetchingReports, generateReport, getReports, reports, error } = useInterview()
     const [jobDescription, setJobDescription] = useState("")
     const [selfDescription, setSelfDescription] = useState("")
     const [resumeFile, setResumeFile] = useState(null)
@@ -14,7 +14,7 @@ const Home = () => {
 
     useEffect(() => {
         getReports()
-    }, [])
+    }, [getReports])
 
     const handleFileChange = (e) => {
         const file = e.target.files[0]
@@ -45,12 +45,23 @@ const Home = () => {
         }
     }
 
-    if (loading) {
+    if (isFetchingReports) {
         return (
             <main className="loading-screen">
                 <div className="loading-inner">
                     <div className="spinner" />
-                    <p>Generating your interview plan...</p>
+                    <p>Loading your past plans...</p>
+                </div>
+            </main>
+        )
+    }
+
+    if (isGenerating) {
+        return (
+            <main className="loading-screen">
+                <div className="loading-inner">
+                    <div className="spinner" />
+                    <p>Analyzing job description and generating your interview plan... (This may take up to 30s)</p>
                 </div>
             </main>
         )
